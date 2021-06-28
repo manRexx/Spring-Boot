@@ -7,8 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
+
 @Entity
 @Table(name="vegetable")
+@Data
 public class Vegetable {
 	
 	@Id
@@ -21,34 +26,6 @@ public class Vegetable {
 	@Column(name="price")
 	private int price;
 	
-	
-	
-	public Vegetable() {
-		super();
-	}
-	public Vegetable(long id, String name, int price) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.price = price;
-	}
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getPrice() {
-		return price;
-	}
-	public void setPrice(int price) {
-		this.price = price;
-	}
-
+	@Column(name="actual-Price")
+	private int actualPrice;
 }
