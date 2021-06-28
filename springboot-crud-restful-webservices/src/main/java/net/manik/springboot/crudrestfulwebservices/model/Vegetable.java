@@ -26,4 +26,7 @@ public class Vegetable {
 	@Column(name="price")
 	private int price;
 	
+	@Column(name="actual")
+	private int actual;
+	
 }

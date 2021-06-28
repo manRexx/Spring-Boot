@@ -60,4 +60,14 @@ public class VegetableController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("/vegetable/offer/{perc}")
+	public List<Vegetable> setActualPrice(@PathVariable(value="perc") int perc) throws ResourceNotFoundException{
+		 List<Vegetable> vegs=vegetableRepository.findAll();
+		 
+		 for(Vegetable v:vegs) {
+			 v.setActual(v.getPrice()-(v.getPrice()*perc)/100);
+		 }
+		 
+		 return vegs;
+	}
 }
