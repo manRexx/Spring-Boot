@@ -2,7 +2,6 @@ package net.manik.springboot.crudrestfulwebservices.controller;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +20,7 @@ import net.manik.springboot.crudrestfulwebservices.exception.ResourceNotFoundExc
 @RestController
 @RequestMapping("/api/v1")
 public class VegetableController {
+	
 	
 	@Autowired
 	private VegetableRepository vegetableRepository;
@@ -60,12 +60,24 @@ public class VegetableController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PutMapping("/vegetable/offer/{id}/{perc}")
+	public Vegetable setActualPriceById(@PathVariable(value="perc") int perc,@PathVariable(value="id") long id) throws ResourceNotFoundException{
+		 Vegetable veg=vegetableRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Vegetable not found"));;
+		 veg.setActual(veg.getPrice()-(veg.getPrice()*perc)/100);
+		 vegetableRepository.save(veg);
+		 
+		 System.out.print(veg);
+		 
+		 return veg;
+	}
+	
 	@PutMapping("/vegetable/offer/{perc}")
 	public List<Vegetable> setActualPrice(@PathVariable(value="perc") int perc) throws ResourceNotFoundException{
 		 List<Vegetable> vegs=vegetableRepository.findAll();
 		 
 		 for(Vegetable v:vegs) {
 			 v.setActual(v.getPrice()-(v.getPrice()*perc)/100);
+			 vegetableRepository.save(v);
 		 }
 		 
 		 return vegs;
