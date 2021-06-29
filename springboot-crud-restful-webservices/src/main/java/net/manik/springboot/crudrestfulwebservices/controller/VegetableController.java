@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,22 +20,35 @@ import net.manik.springboot.crudrestfulwebservices.model.Vegetable;
 import net.manik.springboot.crudrestfulwebservices.repository.VegetableRepository;
 import net.manik.springboot.crudrestfulwebservices.exception.ResourceNotFoundException;
 
-@RestController
-@RequestMapping("/api/v1")
+@Controller
 public class VegetableController {
 	
 	
 	@Autowired
 	private VegetableRepository vegetableRepository;
 	
-	@GetMapping("/vegetables")
-	public List<Vegetable> getAllVegetable(){
-		return vegetableRepository.findAll();
+	@GetMapping("/index")
+	public String getAllVegetable(Model model){
+		model.addAttribute("vegetables", vegetableRepository.findAll());
+		return "index";
+	}
+	
+	@GetMapping("/addVeg")	
+	public String addVeg(Vegetable vegetable){
+		return "addVeg";
 	}
 	
 	@PostMapping("/vegetables")
-	public Vegetable createVegetable(@RequestBody Vegetable vegetable) {
-		return vegetableRepository.save(vegetable);
+	public String createVegetable(Vegetable vegetable, BindingResult result, Model model) {
+		
+		if (result.hasErrors()) {
+            return "add-user";
+        }
+		
+		System.out.print(vegetable);
+		vegetableRepository.save(vegetable);
+		
+		return "redirect:/index";
 	}
 	
 	@GetMapping("/vegetable/{id}")
@@ -42,22 +58,31 @@ public class VegetableController {
 		return ResponseEntity.ok().body(veg);
 	}
 	
-	@PutMapping("/vegetable/{id}")
-	public ResponseEntity<Vegetable> updateVegetable(@PathVariable(value="id") long id,@RequestBody Vegetable vegByFrontEnd) throws ResourceNotFoundException {
+	@GetMapping("/vegetable/edit/{id}")
+	public String updateVegetable(@PathVariable(value="id") long id,Model model) throws ResourceNotFoundException {
 		Vegetable veg=vegetableRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Vegetable not found"));
-		veg.setName(vegByFrontEnd.getName());
-		veg.setPrice(vegByFrontEnd.getPrice());
-		vegetableRepository.save(veg);
+		model.addAttribute("vegetable", veg);
 		
-		return ResponseEntity.ok().body(veg);
+		return "updateVeg";
 	}
 	
-	@DeleteMapping("/vegetable/{id}")
-	public ResponseEntity deleteVegetable(@PathVariable(value="id") long id) throws ResourceNotFoundException  {
+	@PostMapping("/update/{id}")
+	public String updateVegetable(@PathVariable(value="id") long id, Vegetable vegetable, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+	        vegetable.setId(id);
+	        return "updateVegetable";
+	    }
+	        
+		vegetableRepository.save(vegetable);
+	    return "redirect:/index";
+	}
+	
+	@GetMapping("/vegetable/delete/{id}")
+	public String deleteVegetable(@PathVariable(value="id") long id, Model model) throws ResourceNotFoundException  {
 		vegetableRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Vegetable not found"));
 		vegetableRepository.deleteById(id);
 		
-		return ResponseEntity.ok().build();
+		return "redirect:/index";
 	}
 	
 	@PutMapping("/vegetable/offer/{id}/{perc}")
