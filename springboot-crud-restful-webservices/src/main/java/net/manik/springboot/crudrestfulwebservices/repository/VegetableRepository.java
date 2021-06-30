@@ -11,5 +11,7 @@ import net.manik.springboot.crudrestfulwebservices.model.Vegetable;
 public interface VegetableRepository extends JpaRepository<Vegetable,Long> {
 	
 	List<Vegetable> findByPriceBetween(int lower, int higher);
+	
+	List<Vegetable> findByPriceAfter(int lower);
 }
 	
