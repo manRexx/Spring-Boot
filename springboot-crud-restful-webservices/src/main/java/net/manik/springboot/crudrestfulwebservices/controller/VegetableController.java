@@ -28,6 +28,7 @@ public class VegetableController {
 	@GetMapping("/index")
 	public String getAllVegetable(Model model){
 		model.addAttribute("vegetables", vegetableRepository.findAll());
+		System.out.println(vegetableRepository.findByPriceBetween(10, 30));
 		return "index";
 	}
 	
@@ -43,7 +44,6 @@ public class VegetableController {
             return "add-user";
         }
 		
-		System.out.print(vegetable);
 		vegetableRepository.save(vegetable);
 		
 		return "redirect:/index";
